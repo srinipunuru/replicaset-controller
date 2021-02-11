@@ -1,0 +1,30 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: flinkclusters.kubernetes.spunuru.github.com
+spec:
+  group: kubernetes.spunuru.github.com
+  version: v1beta1
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    kind: FlinkCluster
+    listKind: FlinkClusterList
+    plural: flinkclusters
+    singular: flinkcluster
+  preserveUnknownFields: false
+  validation:
+    openAPIV3Schema:
+      type: object
+      properties:
+        spec:
+          type: object
+          properties:
+            numReplicas:
+              format: int32
+              type: integer
+          required:
+          - numReplicas

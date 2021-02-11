@@ -12,8 +12,28 @@ See more tutorial at TBD.
  mvn package spring-boot:repackage
 ```
 
-### Run This Project
+### Apply CRD and Start the controller
 
+```shell script
+# Apply the FlinkCluster CRD
+kubectl apply -f src\main\crd\operator.yaml
+
+# Start the controller
+java -jar ./target/replicaset-controller-1.1-SNAPSHOT.jar
+```
+
+### Create and Delete FlinkCluster objects
+
+When you create or delete the objects, You should see corresponding events being logged in the controller that is running.
+```shell script
+# create object
+kubectl apply -f src/main/test-yaml/TestCluster.yaml
+
+#delete object
+kubectl delete -f kubectl apply -f src/main/test-yaml/TestCluster.yaml
+```
+
+### Run This Project
 
 ```bash
  mvn exec:java -Dexec.mainClass="com.github.yue9944882.kubernetes.Application"
