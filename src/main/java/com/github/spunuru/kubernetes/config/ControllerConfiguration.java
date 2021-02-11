@@ -71,8 +71,8 @@ public class ControllerConfiguration {
                     apiListTypeClass = V1beta1FlinkClusterList.class,
                     groupVersionResource =
                     @GroupVersionResource(
-                            apiGroup = "apps",
-                            apiVersion = "v1",
+                            apiGroup = "kubernetes.spunuru.github.com",
+                            apiVersion = "v1beta1",
                             resourcePlural = "flinkclusters")),
     })
     class ControllerSharedInformerFactory extends SharedInformerFactory {
