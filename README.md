@@ -1,10 +1,4 @@
-# Kubernetes ReplicaSet Controller (Re-written in Java)
-
-
-This is a minimal tutorial example project for writting a kubernetes 
-controller/operator in Java. This project re-writes everything the 
-kubernetes replicaset-controller in KCM(kube-controller-manager) does.
-See more tutorial at TBD.
+# Flink Kubernetes Controller
 
 ### Build this project
 
@@ -16,10 +10,10 @@ See more tutorial at TBD.
 
 ```shell script
 # Apply the FlinkCluster CRD
-kubectl apply -f src\main\crd\operator.yaml
+kubectl apply -f crd\operator.yaml
 
 # Start the controller
-java -jar ./target/replicaset-controller-1.1-SNAPSHOT.jar
+java -jar ./target/flink-controller-1.0.jar
 ```
 
 ### Create and Delete FlinkCluster objects
@@ -27,57 +21,27 @@ java -jar ./target/replicaset-controller-1.1-SNAPSHOT.jar
 When you create or delete the objects, You should see corresponding events being logged in the controller that is running.
 ```shell script
 # create object
-kubectl apply -f src/main/test-yaml/TestCluster.yaml
+kubectl apply -f test-yaml/TestCluster.yaml
 
 #delete object
-kubectl delete -f kubectl apply -f src/main/test-yaml/TestCluster.yaml
+kubectl delete -f kubectl apply -f test-yaml/TestCluster.yaml
 ```
 
-### Run This Project
+### Create and push custom controller Docker Image
 
-```bash
- mvn exec:java -Dexec.mainClass="com.github.yue9944882.kubernetes.Application"
-```
+```shell script
+cd docker-build
+./build-image.sh 
+export CR_PAT=a58bc801b78791c95df837e3401e1394d7c6ee43
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin 
+docker tag flink-controller:latest ghcr.io/srinipunuru/flink-controller:latest
+docker push ghcr.io/srinipunuru/flink-controller:latest
+``` 
 
-### Build Docker Image
+### Build Spring Boot Docker Image
+
+This one uses spring boot maven plugin to create the docker image.
 
 ```bash
 mvn spring-boot:build-image
-```
-
-### Minimal Dependency Requirement for writing a Java Controller
-
-```xml
-<dependency>
-    <groupId>io.kubernetes</groupId>
-    <artifactId>client-java-spring-integration</artifactId>
-    <version>9.0.0</version>
-</dependency>
-```
-
-
-### Run this project in a new KinD cluster
-
-Do the following steps to replace the original kubernetes replicaset-controller 
-with our Java replicaset controller:
-
-
-1. Create a new kind cluster with replicaset-controller disabled:
-
-```bash
-kind create cluster --name no-rs --config=no-rs-kind.config.yaml
-```
-
-2. Installing the java-replicaset-controller to the new cluster:
-
-(NOTE: the manifest will use the pre-built image `ghcr.io/yue9944882/java-replicaset-controller:1.0-SNAPSHOT`)
-
-```bash
-kubectl create -f java-rs-controller.yaml
-```
-
-3. Create a new replicaset or whatever else to verify the replicaset workload is working:
-
-```bash
-kubectl create -f nginx-rs.yaml
 ```

@@ -1,0 +1,6 @@
+apiVersion: kubernetes.spunuru.github.com/v1beta1
+kind: FlinkCluster
+metadata:
+  name: spunuru-cluster1
+spec:
+  numReplicas: 1
