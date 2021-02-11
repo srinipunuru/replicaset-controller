@@ -6,6 +6,11 @@ controller/operator in Java. This project re-writes everything the
 kubernetes replicaset-controller in KCM(kube-controller-manager) does.
 See more tutorial at TBD.
 
+### Build this project
+
+```shell script
+ mvn package spring-boot:repackage
+```
 
 ### Run This Project
 

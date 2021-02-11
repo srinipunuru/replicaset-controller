@@ -1,4 +1,4 @@
-package com.github.yue9944882.kubernetes;
+package com.github.spunuru.kubernetes;
 
 import io.kubernetes.client.openapi.models.*;
 

@@ -1,9 +1,11 @@
-package com.github.yue9944882.kubernetes.config;
+package com.github.spunuru.kubernetes.config;
 
+import com.github.spunuru.kubernetes.FlinkClusterReconciler;
+import com.github.spunuru.kubernetes.models.V1beta1FlinkCluster;
+import com.github.spunuru.kubernetes.models.V1beta1FlinkClusterList;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
-import com.github.yue9944882.kubernetes.ReplicaSetReconciler;
 import io.kubernetes.client.extended.controller.Controller;
 import io.kubernetes.client.extended.controller.ControllerManager;
 import io.kubernetes.client.informer.SharedInformerFactory;
@@ -39,24 +41,24 @@ public class ControllerConfiguration {
     }
 
     @Bean
-    public ReplicaSetReconciler replicaSetReconciler() {
-        return new ReplicaSetReconciler();
+    public FlinkClusterReconciler flinkClusterReconciler() {
+        return new FlinkClusterReconciler();
     }
 
-    @Bean("replicaset-controller")
-    public KubernetesControllerFactory replicaSetController(SharedInformerFactory sharedInformerFactory, ReplicaSetReconciler rs) {
+    @Bean("flinkcluster-controller")
+    public KubernetesControllerFactory replicaSetController(SharedInformerFactory sharedInformerFactory, FlinkClusterReconciler rs) {
         return new KubernetesControllerFactory(sharedInformerFactory, rs);
     }
 
     @Bean
-    public CommandLineRunner starter(SharedInformerFactory sharedInformerFactory, @Qualifier("replicaset-controller") Controller replicasetController) {
+    public CommandLineRunner starter(SharedInformerFactory sharedInformerFactory, @Qualifier("flinkcluster-controller") Controller flinkClusterController) {
         return args -> {
             // Optionally wrap the controller-manager with {@link io.kubernetes.client.extended.leaderelection.LeaderElector}
             // so that the controller works in HA setup.
             // https://github.com/kubernetes-client/java/blob/master/examples/src/main/java/io/kubernetes/client/examples/LeaderElectionExample.java
             ControllerManager controllerManager = new ControllerManager(
                     sharedInformerFactory,
-                    replicasetController
+                    flinkClusterController
             );
             // Starts the controller-manager in background.
             Executors.newSingleThreadExecutor().submit(controllerManager);
@@ -64,22 +66,14 @@ public class ControllerConfiguration {
     }
 
     @KubernetesInformers({
-            @KubernetesInformer( // Adding a pod-informer to the factory for list-watching pod resources
-                    apiTypeClass = V1Pod.class,
-                    apiListTypeClass = V1PodList.class,
-                    groupVersionResource =
-                    @GroupVersionResource(
-                            apiGroup = "",
-                            apiVersion = "v1",
-                            resourcePlural = "pods")),
-            @KubernetesInformer( // Adding a replicaset-informer to the factory for list-watching replicaset resources
-                    apiTypeClass = V1ReplicaSet.class,
-                    apiListTypeClass = V1ReplicaSetList.class,
+            @KubernetesInformer( // Adding a flinkcluster-informer to the factory for list-watching replicaset resources
+                    apiTypeClass = V1beta1FlinkCluster.class,
+                    apiListTypeClass = V1beta1FlinkClusterList.class,
                     groupVersionResource =
                     @GroupVersionResource(
                             apiGroup = "apps",
                             apiVersion = "v1",
-                            resourcePlural = "replicasets")),
+                            resourcePlural = "flinkclusters")),
     })
     class ControllerSharedInformerFactory extends SharedInformerFactory {
     }
